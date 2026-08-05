@@ -1,0 +1,199 @@
+{
+ "far_folds": [
+  [
+   "FAR-봄",
+   "2023-11-24",
+   "2024-02-23",
+   "2024-06-08"
+  ],
+  [
+   "FAR-겨울",
+   "2023-08-25",
+   "2023-11-24",
+   "2024-02-22"
+  ]
+ ],
+ "ladder": [
+  {
+   "label": "S0 leaves255 (=v1)",
+   "over": {
+    "num_leaves": 255
+   },
+   "rounds": 1000,
+   "spring": 0.512166253559485,
+   "winter": 0.5842169629996675,
+   "mean": 0.5481916082795762,
+   "gain": 0.0,
+   "both": false
+  },
+  {
+   "label": "S1 leaves127",
+   "over": {
+    "num_leaves": 127
+   },
+   "rounds": 1000,
+   "spring": 0.5086511284575694,
+   "winter": 0.5990978383603677,
+   "mean": 0.5538744834089686,
+   "gain": -0.005682875129392362,
+   "both": false
+  },
+  {
+   "label": "S2 leaves63",
+   "over": {
+    "num_leaves": 63
+   },
+   "rounds": 1000,
+   "spring": 0.5036249077516116,
+   "winter": 0.5889826873357118,
+   "mean": 0.5463037975436618,
+   "gain": 0.0018878107359144858,
+   "both": false
+  },
+  {
+   "label": "S3 leaves31",
+   "over": {
+    "num_leaves": 31
+   },
+   "rounds": 1000,
+   "spring": 0.5003171763933143,
+   "winter": 0.5839737355248721,
+   "mean": 0.5421454559590932,
+   "gain": 0.006046152320483,
+   "both": true
+  },
+  {
+   "label": "S4 leaves15",
+   "over": {
+    "num_leaves": 15
+   },
+   "rounds": 1000,
+   "spring": 0.4987439017702591,
+   "winter": 0.567200371896823,
+   "mean": 0.532972136833541,
+   "gain": 0.015219471446035193,
+   "both": true
+  },
+  {
+   "label": "S5 leaves63 ×2000r",
+   "over": {
+    "num_leaves": 63
+   },
+   "rounds": 2000,
+   "spring": 0.5068592394816476,
+   "winter": 0.5929324201902456,
+   "mean": 0.5498958298359466,
+   "gain": -0.0017042215563704,
+   "both": false
+  },
+  {
+   "label": "S6 leaves31 ×2000r",
+   "over": {
+    "num_leaves": 31
+   },
+   "rounds": 2000,
+   "spring": 0.5022957482025316,
+   "winter": 0.5928904053105062,
+   "mean": 0.5475930767565189,
+   "gain": 0.0005985315230573329,
+   "both": false
+  },
+  {
+   "label": "S7 leaves63 강규제",
+   "over": {
+    "num_leaves": 63,
+    "min_data_in_leaf": 100,
+    "lambda_l2": 10.0
+   },
+   "rounds": 1000,
+   "spring": 0.5027833237627073,
+   "winter": 0.584947194321815,
+   "mean": 0.5438652590422611,
+   "gain": 0.004326349237315119,
+   "both": false
+  },
+  {
+   "label": "S8 leaves127 강규제",
+   "over": {
+    "num_leaves": 127,
+    "min_data_in_leaf": 100,
+    "lambda_l2": 10.0
+   },
+   "rounds": 1000,
+   "spring": 0.5086006682241592,
+   "winter": 0.5886765588875408,
+   "mean": 0.54863861355585,
+   "gain": -0.00044700527627372644,
+   "both": false
+  },
+  {
+   "label": "S9 leaves63 ff0.65",
+   "over": {
+    "num_leaves": 63,
+    "feature_fraction": 0.65
+   },
+   "rounds": 1000,
+   "spring": 0.5021702075721817,
+   "winter": 0.5735756742592882,
+   "mean": 0.537872940915735,
+   "gain": 0.010318667363841239,
+   "both": true
+  }
+ ],
+ "confirm": [
+  {
+   "label": "S0 leaves255 (=v1)",
+   "over": {
+    "num_leaves": 255
+   },
+   "rounds": 1000,
+   "spring": 0.5103997281540471,
+   "winter": 0.5862331811705425,
+   "mean": 0.5483164546622947,
+   "search": 0.5481916082795762
+  },
+  {
+   "label": "S4 leaves15",
+   "over": {
+    "num_leaves": 15
+   },
+   "rounds": 1000,
+   "spring": 0.4975191908815907,
+   "winter": 0.5633402505707649,
+   "mean": 0.5304297207261778,
+   "search": 0.532972136833541
+  },
+  {
+   "label": "S9 leaves63 ff0.65",
+   "over": {
+    "num_leaves": 63,
+    "feature_fraction": 0.65
+   },
+   "rounds": 1000,
+   "spring": 0.5030040001665088,
+   "winter": 0.577801467747334,
+   "mean": 0.5404027339569214,
+   "search": 0.537872940915735
+  },
+  {
+   "label": "S3 leaves31",
+   "over": {
+    "num_leaves": 31
+   },
+   "rounds": 1000,
+   "spring": 0.5001756398061333,
+   "winter": 0.5793247594759784,
+   "mean": 0.5397501996410559,
+   "search": 0.5421454559590932
+  }
+ ],
+ "adopt": true,
+ "winner": {
+  "label": "S4 leaves15",
+  "over": {
+   "num_leaves": 15
+  },
+  "rounds": 1000,
+  "cv": 0.5304297207261778
+ }
+}

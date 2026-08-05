@@ -1,0 +1,211 @@
+{
+ "base": {
+  "objective": "regression_l1",
+  "metric": "l1",
+  "learning_rate": 0.05,
+  "num_leaves": 255,
+  "min_data_in_leaf": 40,
+  "feature_fraction": 0.85,
+  "bagging_fraction": 0.85,
+  "bagging_freq": 1,
+  "lambda_l2": 1.0,
+  "lambda_l1": 0.0,
+  "verbosity": -1,
+  "num_threads": 16
+ },
+ "base_rounds": 1000,
+ "search_seeds": [
+  42,
+  7
+ ],
+ "confirm_seeds": [
+  2024,
+  913,
+  31
+ ],
+ "ladder": [
+  {
+   "label": "L0 현행(기준선)",
+   "over": {},
+   "rounds": 1000,
+   "f2": 0.444854158305089,
+   "f3": 0.49802305495368215,
+   "f2f3": 0.4714386066293856,
+   "gain": 0.0
+  },
+  {
+   "label": "L1 −bagging",
+   "over": {
+    "bagging_fraction": 1.0,
+    "bagging_freq": 0
+   },
+   "rounds": 1000,
+   "f2": 0.4458969839008722,
+   "f3": 0.49893743124046575,
+   "f2f3": 0.47241720757066896,
+   "gain": -0.0009786009412833807
+  },
+  {
+   "label": "L2 잎최소 40→10",
+   "over": {
+    "min_data_in_leaf": 10
+   },
+   "rounds": 1000,
+   "f2": 0.4435765407129297,
+   "f3": 0.49800163865565567,
+   "f2f3": 0.47078908968429267,
+   "gain": 0.0006495169450929095
+  },
+  {
+   "label": "L3 열 0.85→0.65",
+   "over": {
+    "feature_fraction": 0.65
+   },
+   "rounds": 1000,
+   "f2": 0.44307733361286483,
+   "f3": 0.49693065903601513,
+   "f2f3": 0.47000399632444,
+   "gain": 0.0014346103049455716
+  },
+  {
+   "label": "L4 셋 다",
+   "over": {
+    "bagging_fraction": 1.0,
+    "bagging_freq": 0,
+    "min_data_in_leaf": 10,
+    "feature_fraction": 0.65
+   },
+   "rounds": 1000,
+   "f2": 0.4392605172424689,
+   "f3": 0.49517005649819795,
+   "f2f3": 0.4672152868703334,
+   "gain": 0.004223319759052158
+  },
+  {
+   "label": "L5 셋다+규제",
+   "over": {
+    "bagging_fraction": 1.0,
+    "bagging_freq": 0,
+    "min_data_in_leaf": 10,
+    "feature_fraction": 0.65,
+    "lambda_l2": 3.0,
+    "lambda_l1": 2.0
+   },
+   "rounds": 1000,
+   "f2": 0.44513676689255977,
+   "f3": 0.49610780734440313,
+   "f2f3": 0.4706222871184814,
+   "gain": 0.0008163195109041621
+  },
+  {
+   "label": "L6 셋다+1400r",
+   "over": {
+    "bagging_fraction": 1.0,
+    "bagging_freq": 0,
+    "min_data_in_leaf": 10,
+    "feature_fraction": 0.65
+   },
+   "rounds": 1400,
+   "f2": 0.4332968481819179,
+   "f3": 0.4952024532562024,
+   "f2f3": 0.4642496507190601,
+   "gain": 0.0071889559103254785
+  },
+  {
+   "label": "L7 L5+1400r",
+   "over": {
+    "bagging_fraction": 1.0,
+    "bagging_freq": 0,
+    "min_data_in_leaf": 10,
+    "feature_fraction": 0.65,
+    "lambda_l2": 3.0,
+    "lambda_l1": 2.0
+   },
+   "rounds": 1400,
+   "f2": 0.4415945135821834,
+   "f3": 0.4958433550396658,
+   "f2f3": 0.4687189343109246,
+   "gain": 0.002719672318460986
+  },
+  {
+   "label": "L8 L5+잎511",
+   "over": {
+    "bagging_fraction": 1.0,
+    "bagging_freq": 0,
+    "min_data_in_leaf": 10,
+    "feature_fraction": 0.65,
+    "lambda_l2": 3.0,
+    "lambda_l1": 2.0,
+    "num_leaves": 511
+   },
+   "rounds": 1000,
+   "f2": 0.43415344133407135,
+   "f3": 0.4990869834969628,
+   "f2f3": 0.4666202124155171,
+   "gain": 0.004818394213868482
+  }
+ ],
+ "confirm": [
+  {
+   "label": "L0 현행(기준선)",
+   "over": {},
+   "rounds": 1000,
+   "f2": 0.4450227790258265,
+   "f3": 0.4968368935720078,
+   "f2f3": 0.47092983629891716,
+   "search": 0.4714386066293856
+  },
+  {
+   "label": "L6 셋다+1400r",
+   "over": {
+    "bagging_fraction": 1.0,
+    "bagging_freq": 0,
+    "min_data_in_leaf": 10,
+    "feature_fraction": 0.65
+   },
+   "rounds": 1400,
+   "f2": 0.4354951138854155,
+   "f3": 0.49807004382931885,
+   "f2f3": 0.4667825788573672,
+   "search": 0.4642496507190601
+  },
+  {
+   "label": "L8 L5+잎511",
+   "over": {
+    "bagging_fraction": 1.0,
+    "bagging_freq": 0,
+    "min_data_in_leaf": 10,
+    "feature_fraction": 0.65,
+    "lambda_l2": 3.0,
+    "lambda_l1": 2.0,
+    "num_leaves": 511
+   },
+   "rounds": 1000,
+   "f2": 0.4311996765063214,
+   "f3": 0.496757131487088,
+   "f2f3": 0.4639784039967047,
+   "search": 0.4666202124155171
+  },
+  {
+   "label": "L4 셋 다",
+   "over": {
+    "bagging_fraction": 1.0,
+    "bagging_freq": 0,
+    "min_data_in_leaf": 10,
+    "feature_fraction": 0.65
+   },
+   "rounds": 1000,
+   "f2": 0.4391236705513231,
+   "f3": 0.4978970525260227,
+   "f2f3": 0.46851036153867287,
+   "search": 0.4672152868703334
+  }
+ ],
+ "verdict": {
+  "base": 0.47092983629891716,
+  "best": "L8 L5+잎511",
+  "best_score": 0.4639784039967047,
+  "gain": 0.006951432302212457,
+  "sigma2": 0.003
+ }
+}

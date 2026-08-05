@@ -1,0 +1,31 @@
+{
+ "stamp": "v3_xgb",
+ "model": "xgboost",
+ "cfg": {
+  "objective": "reg:absoluteerror",
+  "tree_method": "hist",
+  "grow_policy": "lossguide",
+  "max_leaves": 255,
+  "max_depth": 0,
+  "eta": 0.05,
+  "min_child_weight": 40,
+  "subsample": 1.0,
+  "colsample_bytree": 0.6,
+  "reg_lambda": 3.0,
+  "reg_alpha": 2.0,
+  "max_cat_to_onehot": 1,
+  "nthread": 16
+ },
+ "rounds": 900,
+ "seeds": [
+  42,
+  7,
+  2024,
+  913,
+  31
+ ],
+ "floor": 1.0,
+ "n_features": 57,
+ "cv_f2f3_confirm_seeds": 0.468,
+ "source": "phase5b top1"
+}

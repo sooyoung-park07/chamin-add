@@ -1,0 +1,64 @@
+{
+ "oof": {
+  "LightGBM 단독": {
+   "f2": 0.4311996765063214,
+   "f3": 0.496757131487088,
+   "f2f3": 0.4639784039967047
+  },
+  "XGBoost 단독": {
+   "f2": 0.4452039362928597,
+   "f3": 0.49221908341595494,
+   "f2f3": 0.46871150985440735
+  },
+  "등가중 앙상블": {
+   "f2": 0.4347549290734199,
+   "f3": 0.49356081389597584,
+   "f2f3": 0.4641578714846979
+  }
+ },
+ "rho": 0.9782656916030805,
+ "ens_gain": -0.00017946748799319012,
+ "recommend": "단일(LightGBM)",
+ "lgb": {
+  "params": {
+   "objective": "regression_l1",
+   "metric": "l1",
+   "learning_rate": 0.05,
+   "num_leaves": 511,
+   "min_data_in_leaf": 10,
+   "feature_fraction": 0.65,
+   "bagging_fraction": 1.0,
+   "bagging_freq": 0,
+   "lambda_l2": 3.0,
+   "lambda_l1": 2.0,
+   "verbosity": -1,
+   "num_threads": 16
+  },
+  "rounds": 1000
+ },
+ "xgbp": {
+  "params": {
+   "objective": "reg:absoluteerror",
+   "tree_method": "hist",
+   "grow_policy": "lossguide",
+   "max_leaves": 255,
+   "max_depth": 0,
+   "eta": 0.05,
+   "min_child_weight": 40,
+   "subsample": 1.0,
+   "colsample_bytree": 0.6,
+   "reg_lambda": 3.0,
+   "reg_alpha": 2.0,
+   "max_cat_to_onehot": 1,
+   "nthread": 16
+  },
+  "rounds": 900
+ },
+ "seeds": [
+  42,
+  7,
+  2024,
+  913,
+  31
+ ]
+}
