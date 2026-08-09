@@ -59,6 +59,16 @@ CTX_KEYS = ["sd_lastweek", "st_mean", "st_nz", "horizon"]
 CAL_KEYS = ["dow", "month", "day", "is_weekend", "is_holiday", "is_holiday_eve",
             "is_dayoff", "doy_sin", "doy_cos", "hwadam_open", "ski_season",
             "ski_peak", "foliage"]
+# 시즌 경계까지의 **부호 있는 거리** + 연휴 구조 (Phase 29, 팀원 저장소에서 이식).
+# 동기: 위 CAL 은 `hwadam_open` 0/1 과 `month` 뿐이라 **"개장 3일 전"과 "개장 30일 전"을
+#   구분하지 못한다.** Phase 28 에서 봄 앙상블 이득의 90% 가 개장 주간 창 하나였고
+#   그 이득의 113% 가 화담숲 13품목에서 나왔다 — 즉 램프 정보에 값어치가 있다.
+#   앙상블로는 못 먹는다(TEST 에 개장 주간 창이 0개). **모델에 가르치는 쪽이 옳다.**
+# ⚠️ 개장일은 **3/29** 다. config.HWADAM_OPEN 의 3/20 은 틀렸고(Phase 5-b 실측 3/29~31)
+#   팀원 코드도 3/20 을 쓴다. 이식하면서 고친다.
+RAMP_KEYS = ["d_to_hwadam_open", "d_to_hwadam_close", "d_to_ski_close",
+             "dayoff_run_len", "dayoff_run_pos"]
+HWADAM_OPEN_MD, HWADAM_CLOSE_MD, SKI_CLOSE_MD = (3, 29), (11, 30), (3, 5)
 ITEM_KEYS = ["store", "cluster", "category", "season_hint", "item_id",
              "price", "is_high_weight"]
 # 메뉴 '이름'으로 만든 군집 — 품목 하나짜리 범주형 피처.
@@ -74,8 +84,8 @@ NAME_THRESHOLD = 0.35           # set_name_threshold() 로 바꾼다
 
 FEATURE_GROUPS = {"win": WIN_KEYS, "dow": DOW_KEYS, "closed": CLOSED_KEYS,
                   "prof": PROF_KEYS, "cross": CROSS_KEYS, "resort": RESORT_KEYS,
-                  "ctx": CTX_KEYS, "cal": CAL_KEYS, "item": ITEM_KEYS,
-                  "name": NAME_KEYS}
+                  "ctx": CTX_KEYS, "cal": CAL_KEYS, "ramp": RAMP_KEYS,
+                  "item": ITEM_KEYS, "name": NAME_KEYS}
 CATEGORICAL = ["store", "cluster", "category", "season_hint", "item_id",
                "dow", "month", "name_cluster"]
 # price는 5등급으로 묶되 **숫자(순서형)로 둔다**. categorical로 바꿨더니
@@ -87,15 +97,19 @@ _HOLIDAYS = set(pd.to_datetime(C.HOLIDAYS))
 def feature_names():
     # ※ 이 순서는 build_samples 의 열 연결 순서와 **반드시** 일치해야 한다.
     return (WIN_KEYS + DOW_KEYS + CLOSED_KEYS + PROF_KEYS + CROSS_KEYS
-            + RESORT_KEYS + CTX_KEYS + CAL_KEYS + ITEM_KEYS + NAME_KEYS)
+            + RESORT_KEYS + CTX_KEYS + CAL_KEYS + RAMP_KEYS + ITEM_KEYS
+            + NAME_KEYS)
 
 
 # ⚠️ 학습에서 제외하는 그룹. build_samples 는 여전히 이 열들을 만들지만 **쓰지 않는다.**
 #   prof   : Phase 4-e 기각 (모델이 item_id×dow 로 이미 알 수 있던 정보)
 #   resort : Phase 9-b 기각 (품목마다 방향이 반대 + 날짜 도장 역할)
 #   name   : **검증 전.** 통과하면 여기서 뺀다.
+#   ramp   : **검증 전 (Phase 29).** 기본 OFF 로 둔다 — 켜면 기존 스크립트가 전부 조용히
+#            v24 와 다른 모델을 만든다. 실험 스크립트가 명시적으로 켠다:
+#              keep = F.active_columns(include=("ramp",))
 # 남겨두는 이유는 재현성과 재시도 방지 기록이다.
-DROPPED = set(PROF_KEYS) | set(RESORT_KEYS) | set(NAME_KEYS)
+DROPPED = set(PROF_KEYS) | set(RESORT_KEYS) | set(NAME_KEYS) | set(RAMP_KEYS)
 
 
 def _norm_menu(m):
@@ -161,19 +175,30 @@ def _name_groups(menus, thr=NAME_THRESHOLD, merge_singletons=False):
     return np.array([remap.get(c, other) for c in lb], dtype=np.int32)
 
 
-def active_columns():
+def _dropped(include=()):
+    """DROPPED 에서 include 로 지정한 그룹만 되살린다."""
+    d = set(DROPPED)
+    for g in include:
+        d -= set(FEATURE_GROUPS[g])
+    return d
+
+
+def active_columns(include=()):
     """**확정 피처 57개**의 열 인덱스. 모든 학습 코드는 이걸 써야 한다.
 
     직접 `k not in PROF_KEYS` 같은 식으로 거르면 새 그룹이 추가될 때마다
     스크립트가 조용히 낡는다(실제로 Phase 5-a에서 그 사고가 났다).
+
+    include : 검증 중인 그룹을 실험 스크립트가 **명시적으로** 켤 때만 쓴다.
+              예) active_columns(include=("ramp",))
     """
-    fn = feature_names()
-    return [i for i, k in enumerate(fn) if k not in DROPPED]
+    dr = _dropped(include)
+    return [i for i, k in enumerate(feature_names()) if k not in dr]
 
 
-def active_names():
-    fn = feature_names()
-    return [k for k in fn if k not in DROPPED]
+def active_names(include=()):
+    dr = _dropped(include)
+    return [k for k in feature_names() if k not in dr]
 
 
 def pick_proxy_items(mat, dates, upto_col, store_codes, min_nz=0.4):
@@ -346,6 +371,54 @@ def _calendar(d):
     return v
 
 
+_RAMP_CACHE = {}
+
+
+def _signed_days_to(d, month, day):
+    """가장 가까운 (month,day) 까지의 **부호 있는** 일수. +면 아직 안 왔고 −면 지났다.
+
+    연도를 셋(작년·올해·내년) 다 놓고 절댓값 최소를 고른다 — 그래야 12/31↔1/1 이 붙는다.
+    `month`(1~12)나 `doy_sin` 으로는 표현할 수 없는 정보다.
+    """
+    cands = (pd.Timestamp(year=y, month=month, day=day)
+             for y in (d.year - 1, d.year, d.year + 1))
+    return float(min(((c - d).days for c in cands), key=abs))
+
+
+def _dayoff_run(d):
+    """연휴 덩어리의 (길이, 이 날이 몇째 날인가). 평일이면 (0,0).
+
+    '토요일'과 '5일 연휴의 3일째'는 수요가 다른데 `is_dayoff` 0/1 로는 같아 보인다.
+    """
+    off = lambda x: x.dayofweek >= 5 or x in _HOLIDAYS
+    if not off(d):
+        return 0.0, 0.0
+    s = e = d
+    for _ in range(10):
+        if off(s - pd.Timedelta(days=1)):
+            s -= pd.Timedelta(days=1)
+        else:
+            break
+    for _ in range(10):
+        if off(e + pd.Timedelta(days=1)):
+            e += pd.Timedelta(days=1)
+        else:
+            break
+    return float((e - s).days + 1), float((d - s).days + 1)
+
+
+def _ramp(d):
+    """RAMP_KEYS 5종. 전부 타깃일 하나로 정해지므로 품목 무관(창 밖 조회 없음 = 규칙 안전)."""
+    if d in _RAMP_CACHE:
+        return _RAMP_CACHE[d]
+    rl, rp = _dayoff_run(d)
+    v = np.array([_signed_days_to(d, *HWADAM_OPEN_MD),
+                  _signed_days_to(d, *HWADAM_CLOSE_MD),
+                  _signed_days_to(d, *SKI_CLOSE_MD), rl, rp], dtype=np.float32)
+    _RAMP_CACHE[d] = v
+    return v
+
+
 def _window_stats(win):
     pos = win > 0
     cnt = pos.sum(1)
@@ -481,8 +554,8 @@ def build_samples(mat, dates, origin_list, ctx, with_target=True, target_mat=Non
             ]).astype(np.float32)
             Xs.append(np.concatenate([
                 wstat, dstat, cstat, pstat, xstat, rstat, ctxm,
-                np.tile(_calendar(td), (n, 1)), ctx.item_static,
-                ctx.name_static], axis=1))
+                np.tile(_calendar(td), (n, 1)), np.tile(_ramp(td), (n, 1)),
+                ctx.item_static, ctx.name_static], axis=1))
             if with_target:
                 ys.append(tmat[:, o + h])
             ms.append(np.column_stack([np.full(n, o), np.full(n, h), idx_arange]))
