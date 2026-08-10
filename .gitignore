@@ -11,3 +11,7 @@ catboost_info/
 # 파이썬
 __pycache__/
 *.pyc
+.venv/
+
+# Tier B API 키
+.env

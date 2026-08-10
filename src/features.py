@@ -12,6 +12,7 @@
   ctx  : 지난주 같은요일 값 + 영업장 집계 + horizon 4개
   item : 품목 정적속성 7개 (범주형 5 + 가격 + 가중영업장)
 """
+import os
 import re
 import warnings
 
@@ -69,6 +70,28 @@ CAL_KEYS = ["dow", "month", "day", "is_weekend", "is_holiday", "is_holiday_eve",
 RAMP_KEYS = ["d_to_hwadam_open", "d_to_hwadam_close", "d_to_ski_close",
              "dayoff_run_len", "dayoff_run_pos"]
 HWADAM_OPEN_MD, HWADAM_CLOSE_MD, SKI_CLOSE_MD = (3, 29), (11, 30), (3, 5)
+
+# ⚠️ Tier B (대회 규정 밖 — 외부 뉴스 조사). RAMP_KEYS 는 개장일을 고정 3/29 상수로
+#   쓰지만 실측은 매년 다르다. 뉴스/보도자료 교차확인(2026-08-10):
+#     2023-03-31 (LG 보도자료 lg.co.kr/media/release/26016, 2023-03-14 작성)
+#     2024-03-29 (한국경제 202403295890K, 화담채 개관 동시 보도, 2024-03-29 작성)
+#     2025-03-28 (헤럴드경제 article/10436390, 2025-03-07 작성 "오는 28일 개원")
+#   자료 없는 연도는 HWADAM_OPEN_MD 고정값으로 대체(안전한 하위호환).
+HWADAM_OPEN_ACTUAL = {2023: (3, 31), 2024: (3, 29), 2025: (3, 28)}
+TB_RAMP_KEYS = ["d_to_hwadam_open_actual"]
+
+# ⚠️ Tier B — 기상청 API허브 ASOS(이천 관측소 203) 실측 일자료. 예측 대상일(td)의 **실제**
+#   기온/강수/적설을 쓴다 — 실전 배포라면 미래 날씨는 예보치라 이건 "완벽한 예보가 있다면"의
+#   상한선 실험이다(재현 CSV: data/tierb/weather_icheon.csv, fetch_weather.py로 수집).
+TB_WEATHER_KEYS = ["wthr_ta_avg", "wthr_rn_day", "wthr_sd_max"]
+# ⚠️ Tier B — 한국관광공사 지역별(경기 광주시) 방문자수. 마찬가지로 예측 대상일 실측치
+#   (data/tierb/visitors_gwangju.csv, fetch_visitors.py). local/outside/foreign 3종.
+TB_VISIT_KEYS = ["visit_local", "visit_outside", "visit_foreign"]
+# ⚠️ Tier B — OpenAI 메뉴명 임베딩(text-embedding-3-small). 철자(TF-IDF) 대신 **의미**로
+#   가장 가까운 다른 품목 1개를 골라, 기존 x_proxy_*(CROSS_KEYS)와 같은 방식으로
+#   그 품목의 최근 판매량을 피처화한다. (data/tierb/menu_embeddings.npy,
+#   fetch_menu_embeddings.py — D.item_order() 순서와 정렬됨)
+TB_EMBED_KEYS = ["emb_sim_last7", "emb_sim_dow"]
 ITEM_KEYS = ["store", "cluster", "category", "season_hint", "item_id",
              "price", "is_high_weight"]
 # 메뉴 '이름'으로 만든 군집 — 품목 하나짜리 범주형 피처.
@@ -85,7 +108,9 @@ NAME_THRESHOLD = 0.35           # set_name_threshold() 로 바꾼다
 FEATURE_GROUPS = {"win": WIN_KEYS, "dow": DOW_KEYS, "closed": CLOSED_KEYS,
                   "prof": PROF_KEYS, "cross": CROSS_KEYS, "resort": RESORT_KEYS,
                   "ctx": CTX_KEYS, "cal": CAL_KEYS, "ramp": RAMP_KEYS,
-                  "item": ITEM_KEYS, "name": NAME_KEYS}
+                  "item": ITEM_KEYS, "name": NAME_KEYS,
+                  "tb_ramp": TB_RAMP_KEYS, "tb_weather": TB_WEATHER_KEYS,
+                  "tb_visit": TB_VISIT_KEYS, "tb_embed": TB_EMBED_KEYS}
 CATEGORICAL = ["store", "cluster", "category", "season_hint", "item_id",
                "dow", "month", "name_cluster"]
 # price는 5등급으로 묶되 **숫자(순서형)로 둔다**. categorical로 바꿨더니
@@ -98,7 +123,8 @@ def feature_names():
     # ※ 이 순서는 build_samples 의 열 연결 순서와 **반드시** 일치해야 한다.
     return (WIN_KEYS + DOW_KEYS + CLOSED_KEYS + PROF_KEYS + CROSS_KEYS
             + RESORT_KEYS + CTX_KEYS + CAL_KEYS + RAMP_KEYS + ITEM_KEYS
-            + NAME_KEYS)
+            + NAME_KEYS + TB_RAMP_KEYS + TB_WEATHER_KEYS + TB_VISIT_KEYS
+            + TB_EMBED_KEYS)
 
 
 # ⚠️ 학습에서 제외하는 그룹. build_samples 는 여전히 이 열들을 만들지만 **쓰지 않는다.**
@@ -109,7 +135,10 @@ def feature_names():
 #            v24 와 다른 모델을 만든다. 실험 스크립트가 명시적으로 켠다:
 #              keep = F.active_columns(include=("ramp",))
 # 남겨두는 이유는 재현성과 재시도 방지 기록이다.
-DROPPED = set(PROF_KEYS) | set(RESORT_KEYS) | set(NAME_KEYS) | set(RAMP_KEYS)
+#   tb_ramp/tb_weather/tb_visit : Tier B(대회 규정 밖). tb_ramp는 게이트 탈락(log_tierb.md TB1).
+DROPPED = (set(PROF_KEYS) | set(RESORT_KEYS) | set(NAME_KEYS) | set(RAMP_KEYS)
+           | set(TB_RAMP_KEYS) | set(TB_WEATHER_KEYS) | set(TB_VISIT_KEYS)
+           | set(TB_EMBED_KEYS))
 
 
 def _norm_menu(m):
@@ -301,6 +330,7 @@ class Context:
         self.set_profile(np.ones((self.n, 7), np.float32))   # 기본값
         self.set_proxy(np.array([np.where(self.store_codes == sc)[0][0]
                                  for sc in np.unique(self.store_codes)]))
+        self.embed_nn_of_item = _embed_nn(self.items)   # Tier B — tb_embed 그룹용
         self._item_static = np.column_stack([
             self.store_codes, self.cluster_codes, self.cat_codes,
             self.season_codes, np.arange(self.n), self.price, self.is_high_w
@@ -419,6 +449,81 @@ def _ramp(d):
     return v
 
 
+_TB_RAMP_CACHE = {}
+
+
+def _signed_days_to_actual(d):
+    """Tier B — 연도별 실측 개장일까지 부호 있는 일수(HWADAM_OPEN_ACTUAL).
+    자료 없는 연도는 HWADAM_OPEN_MD 고정 상수로 대체(_signed_days_to와 동일 로직)."""
+    cands = []
+    for y in (d.year - 1, d.year, d.year + 1):
+        month, day = HWADAM_OPEN_ACTUAL.get(y, HWADAM_OPEN_MD)
+        cands.append(pd.Timestamp(year=y, month=month, day=day))
+    return float(min(((c - d).days for c in cands), key=abs))
+
+
+def _ramp_actual(d):
+    """TB_RAMP_KEYS. _ramp()의 d_to_hwadam_open을 실측치로 교체한 것만 다르다."""
+    if d in _TB_RAMP_CACHE:
+        return _TB_RAMP_CACHE[d]
+    v = np.array([_signed_days_to_actual(d)], dtype=np.float32)
+    _TB_RAMP_CACHE[d] = v
+    return v
+
+
+def _load_tierb_csv(name, cols):
+    """data/tierb/<name>.csv → {date: np.array(cols)} 딕셔너리. 없으면 빈 딕셔너리(전부 0으로 대체)."""
+    path = os.path.join(C.DATA, "tierb", f"{name}.csv")
+    if not os.path.exists(path):
+        return {}
+    df = pd.read_csv(path, encoding="utf-8-sig")
+    df["date"] = pd.to_datetime(df["date"])
+    out = {}
+    for _, row in df.iterrows():
+        out[row["date"]] = np.array([row[c] for c in cols], dtype=np.float32)
+    return out
+
+
+_WEATHER = None
+_VISIT = None
+
+
+def _weather(d):
+    """TB_WEATHER_KEYS(3). 기상청 실측(예측 대상일 td 기준 — 완벽예보 상한선 실험, 캐시 lazy-load)."""
+    global _WEATHER
+    if _WEATHER is None:
+        _WEATHER = _load_tierb_csv("weather_icheon", ["ta_avg", "rn_day", "sd_max"])
+    return _WEATHER.get(d, np.zeros(len(TB_WEATHER_KEYS), dtype=np.float32))
+
+
+def _visit(d):
+    """TB_VISIT_KEYS(3). 관광공사 실측 방문자수(경기 광주시, 예측 대상일 td 기준)."""
+    global _VISIT
+    if _VISIT is None:
+        _VISIT = _load_tierb_csv("visitors_gwangju", ["local", "outside", "foreign"])
+    return _VISIT.get(d, np.zeros(len(TB_VISIT_KEYS), dtype=np.float32))
+
+
+def _embed_nn(items):
+    """품목별 '의미상 가장 가까운 다른 품목' 인덱스(자기 자신 제외).
+
+    data/tierb/menu_embeddings.npy가 없으면(아직 임베딩 안 받음) 자기 자신 인덱스를
+    반환해 x_proxy_* 와 값이 겹치지 않게 하되 조용히 죽지는 않게 한다(호출부에서 무해).
+    """
+    path = os.path.join(C.DATA, "tierb", "menu_embeddings.npy")
+    n = len(items)
+    if not os.path.exists(path):
+        return np.arange(n)
+    emb = np.load(path)
+    if emb.shape[0] != n:
+        raise ValueError(f"menu_embeddings.npy 행 수({emb.shape[0]}) != 품목 수({n}) "
+                          "— D.item_order() 변경 후 재생성 필요")
+    norm = emb / np.maximum(np.linalg.norm(emb, axis=1, keepdims=True), 1e-8)
+    sim = norm @ norm.T
+    np.fill_diagonal(sim, -np.inf)
+    return sim.argmax(1)
+
+
 def _window_stats(win):
     pos = win > 0
     cnt = pos.sum(1)
@@ -506,6 +611,7 @@ def build_samples(mat, dates, origin_list, ctx, with_target=True, target_mat=Non
             st_nz[m] = (win[m] > 0).mean()
             st_daily[m] = win[m].sum(0)[None, :]
         proxy_win = win[ctx.proxy_of_item]               # (n, 28) 프록시 품목 시계열
+        embed_win = win[ctx.embed_nn_of_item]             # (n, 28) 임베딩 최근접 품목 시계열
         st_sum = st_daily.sum(1)
         share_win = np.divide(win.sum(1), st_sum, out=np.zeros(n, np.float32),
                               where=st_sum > 0)
@@ -555,7 +661,12 @@ def build_samples(mat, dates, origin_list, ctx, with_target=True, target_mat=Non
             Xs.append(np.concatenate([
                 wstat, dstat, cstat, pstat, xstat, rstat, ctxm,
                 np.tile(_calendar(td), (n, 1)), np.tile(_ramp(td), (n, 1)),
-                ctx.item_static, ctx.name_static], axis=1))
+                ctx.item_static, ctx.name_static,
+                np.tile(_ramp_actual(td), (n, 1)),
+                np.tile(_weather(td), (n, 1)), np.tile(_visit(td), (n, 1)),
+                np.column_stack([embed_win[:, -7:].mean(1),
+                                 embed_win[:, sel].mean(1)]).astype(np.float32)],
+                axis=1))
             if with_target:
                 ys.append(tmat[:, o + h])
             ms.append(np.column_stack([np.full(n, o), np.full(n, h), idx_arange]))
