@@ -19,7 +19,7 @@ import pandas as pd
 START, END = "2023-01-01", "2025-06-10"
 OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                     "data", "tierb", "naver_trend.csv")
-URL = "https://openapi.naver.com/v1/datalab/search"
+URL = "https://naverapihub.apigw.ntruss.com/search-trend/v1/search"
 # 데이터랩은 한 번 호출에 최대 1년(구간)까지만 허용 — 기간을 나눠서 호출한다.
 CHUNK_MONTHS = 12
 KEYWORD_GROUPS = [
@@ -56,8 +56,8 @@ def fetch_chunk(cid, secret, d0, d1):
         "keywordGroups": KEYWORD_GROUPS, "device": "", "ages": [], "gender": "",
     }, ensure_ascii=False).encode("utf-8")
     req = urllib.request.Request(URL, data=body, method="POST")
-    req.add_header("X-Naver-Client-Id", cid)
-    req.add_header("X-Naver-Client-Secret", secret)
+    req.add_header("X-NCP-APIGW-API-KEY-ID", cid)
+    req.add_header("X-NCP-APIGW-API-KEY", secret)
     req.add_header("Content-Type", "application/json")
     with urllib.request.urlopen(req, timeout=10) as r:
         return json.loads(r.read().decode("utf-8"))

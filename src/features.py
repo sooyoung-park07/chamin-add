@@ -87,10 +87,25 @@ TB_WEATHER_KEYS = ["wthr_ta_avg", "wthr_rn_day", "wthr_sd_max"]
 # ⚠️ Tier B — 한국관광공사 지역별(경기 광주시) 방문자수. 마찬가지로 예측 대상일 실측치
 #   (data/tierb/visitors_gwangju.csv, fetch_visitors.py). local/outside/foreign 3종.
 TB_VISIT_KEYS = ["visit_local", "visit_outside", "visit_foreign"]
+# ⚠️ Tier B — 네이버 검색어트렌드(NAVER API HUB). "곤지암리조트"/"화담숲" 검색량의
+#   7일 이동평균 대비 모멘텀(당일 포함, 실측치 상한선 실험).
+#   (data/tierb/naver_trend_mom.csv, fetch_naver_trend.py + process_naver_trend.py)
+TB_NAVER_KEYS = ["naver_gonjiam_mom", "naver_hwadam_mom"]
 # ⚠️ Tier B — OpenAI 메뉴명 임베딩(text-embedding-3-small). 철자(TF-IDF) 대신 **의미**로
 #   가장 가까운 다른 품목 1개를 골라, 기존 x_proxy_*(CROSS_KEYS)와 같은 방식으로
 #   그 품목의 최근 판매량을 피처화한다. (data/tierb/menu_embeddings.npy,
 #   fetch_menu_embeddings.py — D.item_order() 순서와 정렬됨)
+# ⚠️ Tier B — 네이버 검색어트렌드, 선행지표 버전. 위 TB_NAVER_KEYS와 원본 데이터는 같지만
+#   예측 대상일(td)이 아니라 창이 끝나는 시점(origin)의 검색 모멘텀을 쓴다 — 진짜 "그때까지
+#   알 수 있는 정보만으로 미래를 맞히는가"를 테스트. TB_NAVER_KEYS와 절대 같은 실험에서
+#   동시에 켜지 않는다(규칙: 한 번에 후보 하나).
+TB_NAVER_LEAD_KEYS = ["naver_gonjiam_lead", "naver_hwadam_lead"]
+# ⚠️ Tier B — 네이버 검색 모멘텀, lag 18~33일 전 구간 평균(곤지암만). EDA(eda_naver_lag.py)
+#   근거: 이 구간에서 상관이 고립 봉우리 없이 완만하게 이어짐(r 0.05~0.19). 화담숲은
+#   전 lag에서 상관 없어 제외. (data/tierb/naver_trend_lag.csv, process_naver_lag.py)
+TB_NAVER_LAG_KEYS = ["naver_gonjiam_lag18_33"]
+
+
 TB_EMBED_KEYS = ["emb_sim_last7", "emb_sim_dow"]
 ITEM_KEYS = ["store", "cluster", "category", "season_hint", "item_id",
              "price", "is_high_weight"]
@@ -110,7 +125,8 @@ FEATURE_GROUPS = {"win": WIN_KEYS, "dow": DOW_KEYS, "closed": CLOSED_KEYS,
                   "ctx": CTX_KEYS, "cal": CAL_KEYS, "ramp": RAMP_KEYS,
                   "item": ITEM_KEYS, "name": NAME_KEYS,
                   "tb_ramp": TB_RAMP_KEYS, "tb_weather": TB_WEATHER_KEYS,
-                  "tb_visit": TB_VISIT_KEYS, "tb_embed": TB_EMBED_KEYS}
+                  "tb_visit": TB_VISIT_KEYS, "tb_embed": TB_EMBED_KEYS,
+                  "tb_naver": TB_NAVER_KEYS, "tb_naver_lead": TB_NAVER_LEAD_KEYS, "tb_naver_lag": TB_NAVER_LAG_KEYS}
 CATEGORICAL = ["store", "cluster", "category", "season_hint", "item_id",
                "dow", "month", "name_cluster"]
 # price는 5등급으로 묶되 **숫자(순서형)로 둔다**. categorical로 바꿨더니
@@ -124,7 +140,7 @@ def feature_names():
     return (WIN_KEYS + DOW_KEYS + CLOSED_KEYS + PROF_KEYS + CROSS_KEYS
             + RESORT_KEYS + CTX_KEYS + CAL_KEYS + RAMP_KEYS + ITEM_KEYS
             + NAME_KEYS + TB_RAMP_KEYS + TB_WEATHER_KEYS + TB_VISIT_KEYS
-            + TB_EMBED_KEYS)
+            + TB_EMBED_KEYS + TB_NAVER_KEYS + TB_NAVER_LEAD_KEYS + TB_NAVER_LAG_KEYS)
 
 
 # ⚠️ 학습에서 제외하는 그룹. build_samples 는 여전히 이 열들을 만들지만 **쓰지 않는다.**
@@ -138,7 +154,7 @@ def feature_names():
 #   tb_ramp/tb_weather/tb_visit : Tier B(대회 규정 밖). tb_ramp는 게이트 탈락(log_tierb.md TB1).
 DROPPED = (set(PROF_KEYS) | set(RESORT_KEYS) | set(NAME_KEYS) | set(RAMP_KEYS)
            | set(TB_RAMP_KEYS) | set(TB_WEATHER_KEYS) | set(TB_VISIT_KEYS)
-           | set(TB_EMBED_KEYS))
+           | set(TB_EMBED_KEYS) | set(TB_NAVER_KEYS)| set(TB_NAVER_LEAD_KEYS) | set(TB_NAVER_LAG_KEYS))
 
 
 def _norm_menu(m):
@@ -486,6 +502,7 @@ def _load_tierb_csv(name, cols):
 
 _WEATHER = None
 _VISIT = None
+_NAVER = None
 
 
 def _weather(d):
@@ -503,6 +520,29 @@ def _visit(d):
         _VISIT = _load_tierb_csv("visitors_gwangju", ["local", "outside", "foreign"])
     return _VISIT.get(d, np.zeros(len(TB_VISIT_KEYS), dtype=np.float32))
 
+def _naver(d):
+    """TB_NAVER_KEYS(2). 네이버 검색어트렌드 7일 모멘텀(예측 대상일 td 당일 포함)."""
+    global _NAVER
+    if _NAVER is None:
+        _NAVER = _load_tierb_csv("naver_trend_mom", ["gonjiam_mom", "hwadam_mom"])
+    return _NAVER.get(d, np.zeros(len(TB_NAVER_KEYS), dtype=np.float32))
+
+def _naver_lead(d):
+    """TB_NAVER_LEAD_KEYS(2). 네이버 검색 모멘텀 — 예측 대상일이 아니라 창이 끝나는 시점(origin)
+    기준. 선행지표로서 실제 작동하는지 테스트하는 버전(미래 정보 미포함)."""
+    global _NAVER
+    if _NAVER is None:
+        _NAVER = _load_tierb_csv("naver_trend_mom", ["gonjiam_mom", "hwadam_mom"])
+    return _NAVER.get(d, np.zeros(len(TB_NAVER_LEAD_KEYS), dtype=np.float32))
+
+_NAVER_LAG = None
+
+def _naver_lag(d):
+    """TB_NAVER_LAG_KEYS(1). 곤지암 검색 모멘텀 lag 18~33일 구간 평균(origin 기준)."""
+    global _NAVER_LAG
+    if _NAVER_LAG is None:
+        _NAVER_LAG = _load_tierb_csv("naver_trend_lag", ["gonjiam_lag18_33"])
+    return _NAVER_LAG.get(d, np.zeros(len(TB_NAVER_LAG_KEYS), dtype=np.float32))
 
 def _embed_nn(items):
     """품목별 '의미상 가장 가까운 다른 품목' 인덱스(자기 자신 제외).
@@ -665,7 +705,10 @@ def build_samples(mat, dates, origin_list, ctx, with_target=True, target_mat=Non
                 np.tile(_ramp_actual(td), (n, 1)),
                 np.tile(_weather(td), (n, 1)), np.tile(_visit(td), (n, 1)),
                 np.column_stack([embed_win[:, -7:].mean(1),
-                                 embed_win[:, sel].mean(1)]).astype(np.float32)],
+                 embed_win[:, sel].mean(1)]).astype(np.float32),
+                np.tile(_naver(td), (n, 1)),
+                np.tile(_naver_lead(dates[o]), (n, 1)),
+                np.tile(_naver_lag(dates[o]), (n, 1))],
                 axis=1))
             if with_target:
                 ys.append(tmat[:, o + h])
@@ -680,3 +723,9 @@ def group_columns(group):
     fn = feature_names()
     keys = set(FEATURE_GROUPS[group])
     return [i for i, k in enumerate(fn) if k in keys]
+
+def feature_names():
+    return (WIN_KEYS + DOW_KEYS + CLOSED_KEYS + PROF_KEYS + CROSS_KEYS
+            + RESORT_KEYS + CTX_KEYS + CAL_KEYS + RAMP_KEYS + ITEM_KEYS
+            + NAME_KEYS + TB_RAMP_KEYS + TB_WEATHER_KEYS + TB_VISIT_KEYS
+            + TB_EMBED_KEYS + TB_NAVER_KEYS)
