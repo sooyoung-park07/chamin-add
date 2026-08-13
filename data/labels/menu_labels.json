@@ -1,0 +1,1355 @@
+{
+ "items": [
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "1인 수저세트",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "BBQ55(단체)",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "대여료 30,000원",
+   "price_krw": 30000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "대여료 60,000원",
+   "price_krw": 60000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "대여료 90,000원",
+   "price_krw": 90000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "본삼겹 (단품,실내)",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "스프라이트 (단체)",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "신라면",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "쌈야채세트",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "쌈장",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "육개장 사발면",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "일회용 소주컵",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "일회용 종이컵",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "잔디그늘집 대여료 (12인석)",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "잔디그늘집 대여료 (6인석)",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "잔디그늘집 의자 추가",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "참이슬 (단체)",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "친환경 접시 14cm",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "친환경 접시 23cm",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "카스 병(단체)",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "콜라 (단체)",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "햇반",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "느티나무 셀프BBQ",
+   "menu": "허브솔트",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "(단체) 공깃밥",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "(단체) 생목살 김치전골 2.0",
+   "price_krw": 32000,
+   "category": "식사·메인",
+   "season": "겨울"
+  },
+  {
+   "store": "담하",
+   "menu": "(단체) 은이버섯 갈비탕",
+   "price_krw": 32000,
+   "category": "식사·메인",
+   "season": "겨울"
+  },
+  {
+   "store": "담하",
+   "menu": "(단체) 한우 우거지 국밥",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "겨울"
+  },
+  {
+   "store": "담하",
+   "menu": "(단체) 황태해장국 3/27까지",
+   "price_krw": 32000,
+   "category": "식사·메인",
+   "season": "겨울"
+  },
+  {
+   "store": "담하",
+   "menu": "(정식) 된장찌개",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "겨울"
+  },
+  {
+   "store": "담하",
+   "menu": "(정식) 물냉면 ",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "여름"
+  },
+  {
+   "store": "담하",
+   "menu": "(정식) 비빔냉면",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "여름"
+  },
+  {
+   "store": "담하",
+   "menu": "(후식) 된장찌개",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "겨울"
+  },
+  {
+   "store": "담하",
+   "menu": "(후식) 물냉면",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "여름"
+  },
+  {
+   "store": "담하",
+   "menu": "(후식) 비빔냉면",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "여름"
+  },
+  {
+   "store": "담하",
+   "menu": "갑오징어 비빔밥",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "갱시기",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "공깃밥",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "꼬막 비빔밥",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "느린마을 막걸리",
+   "price_krw": 8500,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "담하 한우 불고기",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "담하 한우 불고기 정식",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "더덕 한우 지짐",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "들깨 양지탕",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "라면사리",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "룸 이용료",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "메밀면 사리",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "명인안동소주",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "명태회 비빔냉면",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "여름"
+  },
+  {
+   "store": "담하",
+   "menu": "문막 복분자 칵테일",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "봉평메밀 물냉면",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "여름"
+  },
+  {
+   "store": "담하",
+   "menu": "생목살 김치찌개",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "겨울"
+  },
+  {
+   "store": "담하",
+   "menu": "스프라이트",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "은이버섯 갈비탕",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "겨울"
+  },
+  {
+   "store": "담하",
+   "menu": "제로콜라",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "참이슬",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "처음처럼",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "카스",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "콜라",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "테라",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "하동 매실 칵테일",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "한우 떡갈비 정식",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "담하",
+   "menu": "한우 미역국 정식",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "겨울"
+  },
+  {
+   "store": "담하",
+   "menu": "한우 우거지 국밥",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "겨울"
+  },
+  {
+   "store": "담하",
+   "menu": "한우 차돌박이 된장찌개",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "겨울"
+  },
+  {
+   "store": "담하",
+   "menu": "황태해장국",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "겨울"
+  },
+  {
+   "store": "라그로타",
+   "menu": "AUS (200g)",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "G-Charge(3)",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "Gls.Sileni",
+   "price_krw": 14000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "Gls.미션 서드",
+   "price_krw": 14000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "Open Food",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "그릴드 비프 샐러드",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "까르보나라",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "모둠 해산물 플래터",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "미션 서드 카베르네 쉬라",
+   "price_krw": 14000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "버섯 크림 리조또",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "빵 추가 (1인)",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "스프라이트",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "시저 샐러드 ",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "아메리카노",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "알리오 에 올리오 ",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "양갈비 (4ps)",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "자몽리치에이드",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "여름"
+  },
+  {
+   "store": "라그로타",
+   "menu": "제로콜라",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "카스",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "콜라",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "하이네켄(생)",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "한우 (200g)",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "해산물 토마토 리조또",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "해산물 토마토 스튜 파스타",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "라그로타",
+   "menu": "해산물 토마토 스파게티",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "(단체)브런치주중 36,000",
+   "price_krw": 36000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "(오븐) 하와이안 쉬림프 피자",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "(화덕) 불고기 페퍼로니 반반피자",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "BBQ Platter",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "BBQ 고기추가",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "공깃밥",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "글라스와인 (레드)",
+   "price_krw": 14000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "레인보우칵테일(알코올)",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "미라시아 브런치 (패키지)",
+   "price_krw": 32000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "버드와이저(무제한)",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "보일링 랍스타 플래터",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "보일링 랍스타 플래터(덜매운맛)",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "브런치 2인 패키지 ",
+   "price_krw": 32000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "브런치 4인 패키지 ",
+   "price_krw": 32000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "브런치(대인) 주말",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "브런치(대인) 주중",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "브런치(어린이)",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "쉬림프 투움바 파스타",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "스텔라(무제한)",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "스프라이트",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "애플망고 에이드",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "여름"
+  },
+  {
+   "store": "미라시아",
+   "menu": "얼그레이 하이볼",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "오븐구이 윙과 킬바사소세지",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "유자 하이볼",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "잭 애플 토닉",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "칠리 치즈 프라이",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "코카콜라",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "코카콜라(제로)",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "콥 샐러드",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "파스타면 추가(150g)",
+   "price_krw": 26000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "미라시아",
+   "menu": "핑크레몬에이드",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "여름"
+  },
+  {
+   "store": "연회장",
+   "menu": "Cass Beer",
+   "price_krw": 6000,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "Conference L1",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "Conference L2",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "Conference L3",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "Conference M1",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "Conference M8",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "Conference M9",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "Convention Hall",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "Cookie Platter",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "Grand Ballroom",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "OPUS 2",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "Regular Coffee",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "골뱅이무침",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "공깃밥",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "돈목살 김치찌개 (밥포함)",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "겨울"
+  },
+  {
+   "store": "연회장",
+   "menu": "로제 치즈떡볶이",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "마라샹궈",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "매콤 무뼈닭발&계란찜",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "겨울"
+  },
+  {
+   "store": "연회장",
+   "menu": "모둠 돈육구이(3인)",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "삼겹살추가 (200g)",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "야채추가",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "왕갈비치킨",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "연회장",
+   "menu": "주먹밥 (2ea)",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "공깃밥(추가)",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "구슬아이스크림",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "여름"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "단체식 13000(신)",
+   "price_krw": 13000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "단체식 18000(신)",
+   "price_krw": 18000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "돼지고기 김치찌개",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "겨울"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "복숭아 아이스티",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "여름"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "새우 볶음밥",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "새우튀김 우동",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "샷 추가",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "수제 등심 돈까스",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "아메리카노(HOT)",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "겨울"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "아메리카노(ICE)",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "여름"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "약 고추장 돌솥비빔밥",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "어린이 돈까스",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "오픈푸드",
+   "price_krw": 2000,
+   "category": "기타·용품",
+   "season": "무관"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "진사골 설렁탕",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "겨울"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "짜장면",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "짜장밥",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "짬뽕",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "짬뽕밥",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "치즈돈까스",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "카페라떼(HOT)",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "겨울"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "카페라떼(ICE)",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "여름"
+  },
+  {
+   "store": "카페테리아",
+   "menu": "한상 삼겹구이 정식(2인) 소요시간 약 15~20분",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "포레스트릿",
+   "menu": "꼬치어묵",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "겨울"
+  },
+  {
+   "store": "포레스트릿",
+   "menu": "떡볶이",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "포레스트릿",
+   "menu": "복숭아 아이스티",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "여름"
+  },
+  {
+   "store": "포레스트릿",
+   "menu": "생수",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "포레스트릿",
+   "menu": "스프라이트",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "포레스트릿",
+   "menu": "아메리카노(HOT)",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "겨울"
+  },
+  {
+   "store": "포레스트릿",
+   "menu": "아메리카노(ICE)",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "여름"
+  },
+  {
+   "store": "포레스트릿",
+   "menu": "치즈 핫도그",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "포레스트릿",
+   "menu": "카페라떼(HOT)",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "겨울"
+  },
+  {
+   "store": "포레스트릿",
+   "menu": "카페라떼(ICE)",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "여름"
+  },
+  {
+   "store": "포레스트릿",
+   "menu": "코카콜라",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "포레스트릿",
+   "menu": "페스츄리 소시지",
+   "price_krw": 6000,
+   "category": "사이드·안주",
+   "season": "무관"
+  },
+  {
+   "store": "화담숲주막",
+   "menu": "느린마을 막걸리",
+   "price_krw": 8500,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "화담숲주막",
+   "menu": "단호박 식혜 ",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "화담숲주막",
+   "menu": "병천순대",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "화담숲주막",
+   "menu": "스프라이트",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "화담숲주막",
+   "menu": "참살이 막걸리",
+   "price_krw": 8500,
+   "category": "주류",
+   "season": "무관"
+  },
+  {
+   "store": "화담숲주막",
+   "menu": "찹쌀식혜",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "화담숲주막",
+   "menu": "콜라",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "화담숲주막",
+   "menu": "해물파전",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  },
+  {
+   "store": "화담숲카페",
+   "menu": "메밀미숫가루",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "무관"
+  },
+  {
+   "store": "화담숲카페",
+   "menu": "아메리카노 HOT",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "겨울"
+  },
+  {
+   "store": "화담숲카페",
+   "menu": "아메리카노 ICE",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "여름"
+  },
+  {
+   "store": "화담숲카페",
+   "menu": "카페라떼 ICE",
+   "price_krw": 4500,
+   "category": "음료",
+   "season": "여름"
+  },
+  {
+   "store": "화담숲카페",
+   "menu": "현미뻥스크림",
+   "price_krw": 13000,
+   "category": "식사·메인",
+   "season": "무관"
+  }
+ ]
+}

@@ -84,6 +84,15 @@ TB_RAMP_KEYS = ["d_to_hwadam_open_actual"]
 #   기온/강수/적설을 쓴다 — 실전 배포라면 미래 날씨는 예보치라 이건 "완벽한 예보가 있다면"의
 #   상한선 실험이다(재현 CSV: data/tierb/weather_icheon.csv, fetch_weather.py로 수집).
 TB_WEATHER_KEYS = ["wthr_ta_avg", "wthr_rn_day", "wthr_sd_max"]
+# ⚠️ Tier B — TB2b(TB2 재시도). log_tierb.md TB2 판정: 겨울 2폴드 손해·봄 2폴드 이득으로
+#   4/4 게이트 탈락. 원인: 위 TB_WEATHER_KEYS가 `np.tile`로 9개 업장 193개 전 품목에
+#   동일한 날씨값을 그대로 복사한다 — README가 경고한 Phase 9-b 실수(리조트 공통 피처는
+#   업장마다 부호가 반대라 기각)와 같은 패턴. 실제 날씨 노출 업장은 `STORE_CLUSTER` 기준
+#   hwadam(화담숲주막·화담숲카페, 12~2월 완전 휴점)·green(느티나무 셀프BBQ, 연중 영업)
+#   둘뿐이다. 이번엔 그 두 업장군에만 값을 주고, 화담숲은 개장기간(`HWADAM_OPEN`,
+#   `_calendar()`의 hwadam_open과 동일 정의)에만 켠다. 경계를 TB2 폴드 결과(2/23)로
+#   맞추지 않기 위해 **결과와 무관하게 이미 존재하던 도메인 상수**를 그대로 재사용한다.
+TB_WEATHER_GATED_KEYS = ["wthr_ta_avg_g", "wthr_rn_day_g", "wthr_sd_max_g"]
 # ⚠️ Tier B — 한국관광공사 지역별(경기 광주시) 방문자수. 마찬가지로 예측 대상일 실측치
 #   (data/tierb/visitors_gwangju.csv, fetch_visitors.py). local/outside/foreign 3종.
 TB_VISIT_KEYS = ["visit_local", "visit_outside", "visit_foreign"]
@@ -110,6 +119,7 @@ FEATURE_GROUPS = {"win": WIN_KEYS, "dow": DOW_KEYS, "closed": CLOSED_KEYS,
                   "ctx": CTX_KEYS, "cal": CAL_KEYS, "ramp": RAMP_KEYS,
                   "item": ITEM_KEYS, "name": NAME_KEYS,
                   "tb_ramp": TB_RAMP_KEYS, "tb_weather": TB_WEATHER_KEYS,
+                  "tb_weather_v2": TB_WEATHER_GATED_KEYS,
                   "tb_visit": TB_VISIT_KEYS, "tb_embed": TB_EMBED_KEYS}
 CATEGORICAL = ["store", "cluster", "category", "season_hint", "item_id",
                "dow", "month", "name_cluster"]
@@ -124,7 +134,7 @@ def feature_names():
     return (WIN_KEYS + DOW_KEYS + CLOSED_KEYS + PROF_KEYS + CROSS_KEYS
             + RESORT_KEYS + CTX_KEYS + CAL_KEYS + RAMP_KEYS + ITEM_KEYS
             + NAME_KEYS + TB_RAMP_KEYS + TB_WEATHER_KEYS + TB_VISIT_KEYS
-            + TB_EMBED_KEYS)
+            + TB_EMBED_KEYS + TB_WEATHER_GATED_KEYS)
 
 
 # ⚠️ 학습에서 제외하는 그룹. build_samples 는 여전히 이 열들을 만들지만 **쓰지 않는다.**
@@ -136,9 +146,10 @@ def feature_names():
 #              keep = F.active_columns(include=("ramp",))
 # 남겨두는 이유는 재현성과 재시도 방지 기록이다.
 #   tb_ramp/tb_weather/tb_visit : Tier B(대회 규정 밖). tb_ramp는 게이트 탈락(log_tierb.md TB1).
+#   tb_weather_v2 : TB2b, **검증 전.** 통과하면 여기서 빼고 tb_weather(TB2, 탈락)는 그대로 둔다.
 DROPPED = (set(PROF_KEYS) | set(RESORT_KEYS) | set(NAME_KEYS) | set(RAMP_KEYS)
            | set(TB_RAMP_KEYS) | set(TB_WEATHER_KEYS) | set(TB_VISIT_KEYS)
-           | set(TB_EMBED_KEYS))
+           | set(TB_EMBED_KEYS) | set(TB_WEATHER_GATED_KEYS))
 
 
 def _norm_menu(m):
@@ -307,6 +318,11 @@ class Context:
         self.store_names = list(pd.Categorical(stores).categories)
         self.cluster_codes = pd.Categorical(
             [C.STORE_CLUSTER[s] for s in stores]).codes.astype(np.int32)
+        # TB2b — 날씨 게이팅용 업장군 마스크(화담숲=개장기간만, 느티나무=연중, 나머지=0).
+        self._hwadam_mask = np.array(
+            [1.0 if C.STORE_CLUSTER[s] == "hwadam" else 0.0 for s in stores], np.float32)
+        self._green_mask = np.array(
+            [1.0 if C.STORE_CLUSTER[s] == "green" else 0.0 for s in stores], np.float32)
         lab = D.load_labels()
         raw_price = np.array(
             [D.label_of(lab, k, "price_krw", 0) or 0 for k in self.items], np.float32)
@@ -496,6 +512,18 @@ def _weather(d):
     return _WEATHER.get(d, np.zeros(len(TB_WEATHER_KEYS), dtype=np.float32))
 
 
+def _weather_gated(td, ctx):
+    """TB_WEATHER_GATED_KEYS(3), TB2b. 화담숲=개장기간만(HWADAM_OPEN, `_calendar()`의
+    hwadam_open과 동일 정의) · 느티나무=연중 · 나머지 7개 업장=0. TB2와 동일하게 예측
+    대상일(td)의 실측값이라 완벽예보 상한선 전제도 동일하다. 게이트 경계는 TB2 폴드
+    결과가 아니라 기존 도메인 상수(HWADAM_OPEN)로 고정했다."""
+    w = _weather(td)
+    md = (td.month, td.day)
+    hw_open = C.HWADAM_OPEN[0] <= md <= C.HWADAM_OPEN[1]
+    gate = ctx._hwadam_mask * (1.0 if hw_open else 0.0) + ctx._green_mask
+    return gate[:, None] * w[None, :]
+
+
 def _visit(d):
     """TB_VISIT_KEYS(3). 관광공사 실측 방문자수(경기 광주시, 예측 대상일 td 기준)."""
     global _VISIT
@@ -665,7 +693,8 @@ def build_samples(mat, dates, origin_list, ctx, with_target=True, target_mat=Non
                 np.tile(_ramp_actual(td), (n, 1)),
                 np.tile(_weather(td), (n, 1)), np.tile(_visit(td), (n, 1)),
                 np.column_stack([embed_win[:, -7:].mean(1),
-                                 embed_win[:, sel].mean(1)]).astype(np.float32)],
+                                 embed_win[:, sel].mean(1)]).astype(np.float32),
+                _weather_gated(td, ctx)],
                 axis=1))
             if with_target:
                 ys.append(tmat[:, o + h])

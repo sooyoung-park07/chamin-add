@@ -1,10 +1,4 @@
-# 대회 데이터 — 재배포 금지 (DACON 에서 직접 다운로드)
-data/
-
-# 대용량/파생 산출물
-submissions/
-*.npy
-*.npz
+# 파생 산출물(로그·빌드 잡동사니 — 데이터 아님)
 *.log
 catboost_info/
 
