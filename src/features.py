@@ -115,6 +115,14 @@ TB_NAVER_SLOPE_KEYS = ["naver_gonjiam_slope_lag7_29"]
 #   변동성 조합에서만 나타남 — 모델이 기존에 갖지 않은 종류의 정보일 가능성.
 #   (data/tierb/naver_std_lag.csv, process_naver_std.py)
 TB_NAVER_STD_KEYS = ["hwadam_std_lag20_35"]
+# ⚠️ Tier B — RAMP_KEYS는 스키장 폐장일을 고정 3/5 상수로 쓰지만 실측은 매년 다르다.
+#   뉴스 교차확인(2026-08-11):
+#     2024-03-01 (전국 스키장 폐장일 정리 기사, "곤지암 스키장 폐장일 2024년 3월 1일")
+#     2025-03-03 (곤지암리조트 자체 공지 "슬로프 및 눈썰매장 이용 안내" ver.2/18, "3/3(월) 17:00 폐장")
+#   2023년은 신뢰할 만한 출처를 못 찾음 — SKI_CLOSE_MD 고정값(3/5)으로 대체(안전한 하위호환,
+#   HWADAM_OPEN_ACTUAL과 동일 관례).
+SKI_CLOSE_ACTUAL = {2024: (3, 1), 2025: (3, 3)}
+TB_RAMP_KEYS = ["d_to_hwadam_open_actual", "d_to_ski_close_actual"]
 
 TB_EMBED_KEYS = ["emb_sim_last7", "emb_sim_dow"]
 ITEM_KEYS = ["store", "cluster", "category", "season_hint", "item_id",
@@ -137,7 +145,8 @@ FEATURE_GROUPS = {"win": WIN_KEYS, "dow": DOW_KEYS, "closed": CLOSED_KEYS,
                   "tb_ramp": TB_RAMP_KEYS, "tb_weather": TB_WEATHER_KEYS,
                   "tb_visit": TB_VISIT_KEYS, "tb_embed": TB_EMBED_KEYS,
                   "tb_naver": TB_NAVER_KEYS, "tb_naver_lead": TB_NAVER_LEAD_KEYS, "tb_naver_lag": TB_NAVER_LAG_KEYS,
-                  "tb_naver_slope": TB_NAVER_SLOPE_KEYS, "tb_naver_std": TB_NAVER_STD_KEYS}
+                  "tb_naver_slope": TB_NAVER_SLOPE_KEYS, "tb_naver_std": TB_NAVER_STD_KEYS,
+                  "tb_ski_close": ["d_to_ski_close_actual"]}
 CATEGORICAL = ["store", "cluster", "category", "season_hint", "item_id",
                "dow", "month", "name_cluster"]
 # price는 5등급으로 묶되 **숫자(순서형)로 둔다**. categorical로 바꿨더니
@@ -165,7 +174,9 @@ def feature_names():
 #   tb_ramp/tb_weather/tb_visit : Tier B(대회 규정 밖). tb_ramp는 게이트 탈락(log_tierb.md TB1).
 DROPPED = (set(PROF_KEYS) | set(RESORT_KEYS) | set(NAME_KEYS) | set(RAMP_KEYS)
            | set(TB_RAMP_KEYS) | set(TB_WEATHER_KEYS) | set(TB_VISIT_KEYS)
-           | set(TB_EMBED_KEYS) | set(TB_NAVER_KEYS)| set(TB_NAVER_LEAD_KEYS) | set(TB_NAVER_LAG_KEYS) | set(TB_NAVER_SLOPE_KEYS) | set(TB_NAVER_STD_KEYS))
+           | set(TB_EMBED_KEYS) | set(TB_NAVER_KEYS)| 
+           set(TB_NAVER_LEAD_KEYS) | set(TB_NAVER_LAG_KEYS) 
+           | set(TB_NAVER_SLOPE_KEYS) | set(TB_NAVER_STD_KEYS))
 
 
 def _norm_menu(m):
@@ -488,12 +499,21 @@ def _signed_days_to_actual(d):
         cands.append(pd.Timestamp(year=y, month=month, day=day))
     return float(min(((c - d).days for c in cands), key=abs))
 
+def _signed_days_to_ski_close_actual(d):
+    """Tier B — 연도별 실측 스키장 폐장일까지 부호 있는 일수(SKI_CLOSE_ACTUAL).
+    자료 없는 연도는 SKI_CLOSE_MD 고정 상수로 대체."""
+    cands = []
+    for y in (d.year - 1, d.year, d.year + 1):
+        month, day = SKI_CLOSE_ACTUAL.get(y, SKI_CLOSE_MD)
+        cands.append(pd.Timestamp(year=y, month=month, day=day))
+    return float(min(((c - d).days for c in cands), key=abs))
 
 def _ramp_actual(d):
-    """TB_RAMP_KEYS. _ramp()의 d_to_hwadam_open을 실측치로 교체한 것만 다르다."""
+    """TB_RAMP_KEYS. _ramp()의 d_to_hwadam_open·d_to_ski_close를 실측치로 교체."""
     if d in _TB_RAMP_CACHE:
         return _TB_RAMP_CACHE[d]
-    v = np.array([_signed_days_to_actual(d)], dtype=np.float32)
+    v = np.array([_signed_days_to_actual(d),
+                  _signed_days_to_ski_close_actual(d)], dtype=np.float32)
     _TB_RAMP_CACHE[d] = v
     return v
 
