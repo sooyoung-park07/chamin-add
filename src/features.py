@@ -93,6 +93,20 @@ TB_WEATHER_KEYS = ["wthr_ta_avg", "wthr_rn_day", "wthr_sd_max"]
 #   `_calendar()`의 hwadam_open과 동일 정의)에만 켠다. 경계를 TB2 폴드 결과(2/23)로
 #   맞추지 않기 위해 **결과와 무관하게 이미 존재하던 도메인 상수**를 그대로 재사용한다.
 TB_WEATHER_GATED_KEYS = ["wthr_ta_avg_g", "wthr_rn_day_g", "wthr_sd_max_g"]
+# ⚠️ Tier B — TB2c. TB2/TB2b는 둘 다 예측 대상일(td)의 실측 날씨라 "완벽예보가 있다면"의
+#   상한선 실험이었다. TB2c는 **origin(창이 끝나는 날, 이미 다 지난 시점) 기준 최근 7일
+#   실측 날씨 추세**로 바꾼 배포 가능 버전이다 — td가 아니라 origin까지의 정보만 쓰므로
+#   실전에서도 그대로 계산 가능하다. ta_avg는 7일 평균, rn_day는 7일 합, sd_max는 7일
+#   최댓값. 게이팅(화담숲=개장기간만·느티나무=연중)은 TB2b와 동일하게 유지 — 개장기간
+#   판정은 예측 대상일 td 기준(그 날 화담숲이 열려 있는지가 중요하지, origin이 아니다).
+TB_WEATHER_TREND_KEYS = ["wthr_ta_avg_last7_g", "wthr_rn_day_last7sum_g", "wthr_sd_max_last7_g"]
+# ⚠️ Tier B — TB2d. TB2·TB2b·TB2c 세 번 전부 FAR-겨울(학습 데이터 최소 폴드)에서 손해가
+#   났는데, 공통점은 겨울엔 화담숲 게이트가 꺼지고 **느티나무(green) 단독 신호만 남는다**는
+#   것이었다 — 그 얇아진 신호가 매번 잡음원으로 의심됨. TB2d는 TB2c와 원본 데이터·추세
+#   설계(origin 기준 최근 7일)는 동일하되, **느티나무를 게이트에서 완전히 빼고 화담숲
+#   (개장기간만, 계절성이 훨씬 뚜렷함)만 남긴다** — 겨울엔 항상 0이 되므로 FAR-겨울에서
+#   더 이상 잡음을 만들 수 없다는 게 핵심 가설.
+TB_WEATHER_HWADAM_KEYS = ["wthr_ta_avg_last7_hw", "wthr_rn_day_last7sum_hw", "wthr_sd_max_last7_hw"]
 # ⚠️ Tier B — 한국관광공사 지역별(경기 광주시) 방문자수. 마찬가지로 예측 대상일 실측치
 #   (data/tierb/visitors_gwangju.csv, fetch_visitors.py). local/outside/foreign 3종.
 TB_VISIT_KEYS = ["visit_local", "visit_outside", "visit_foreign"]
@@ -156,7 +170,9 @@ FEATURE_GROUPS = {"win": WIN_KEYS, "dow": DOW_KEYS, "closed": CLOSED_KEYS,
                   "tb_visit": TB_VISIT_KEYS, "tb_embed": TB_EMBED_KEYS,
                   "tb_naver": TB_NAVER_KEYS, "tb_naver_lead": TB_NAVER_LEAD_KEYS, "tb_naver_lag": TB_NAVER_LAG_KEYS,
                   "tb_naver_slope": TB_NAVER_SLOPE_KEYS, "tb_naver_std": TB_NAVER_STD_KEYS,
-                  "tb_ski_close": ["d_to_ski_close_actual"]}
+                  "tb_ski_close": ["d_to_ski_close_actual"],
+                  "tb_weather_trend": TB_WEATHER_TREND_KEYS,
+                  "tb_weather_trend_hw": TB_WEATHER_HWADAM_KEYS}
 CATEGORICAL = ["store", "cluster", "category", "season_hint", "item_id",
                "dow", "month", "name_cluster"]
 # price는 5등급으로 묶되 **숫자(순서형)로 둔다**. categorical로 바꿨더니
@@ -171,7 +187,8 @@ def feature_names():
             + RESORT_KEYS + CTX_KEYS + CAL_KEYS + RAMP_KEYS + ITEM_KEYS
             + NAME_KEYS + TB_RAMP_KEYS + TB_WEATHER_KEYS + TB_VISIT_KEYS
             + TB_EMBED_KEYS + TB_NAVER_KEYS + TB_NAVER_LEAD_KEYS + TB_NAVER_LAG_KEYS
-            + TB_NAVER_SLOPE_KEYS + TB_NAVER_STD_KEYS + TB_WEATHER_GATED_KEYS)
+            + TB_NAVER_SLOPE_KEYS + TB_NAVER_STD_KEYS + TB_WEATHER_GATED_KEYS
+            + TB_WEATHER_TREND_KEYS + TB_WEATHER_HWADAM_KEYS)
 
 
 # ⚠️ 학습에서 제외하는 그룹. build_samples 는 여전히 이 열들을 만들지만 **쓰지 않는다.**
@@ -183,12 +200,15 @@ def feature_names():
 #              keep = F.active_columns(include=("ramp",))
 # 남겨두는 이유는 재현성과 재시도 방지 기록이다.
 #   tb_ramp/tb_weather/tb_visit : Tier B(대회 규정 밖). tb_ramp는 게이트 탈락(log_tierb.md TB1).
-#   tb_weather_v2 : TB2b, **검증 전.** 통과하면 여기서 빼고 tb_weather(TB2, 탈락)는 그대로 둔다.
+#   tb_weather_v2 : TB2b, 게이트 탈락(log_tierb.md TB2b, 3/4).
+#   tb_weather_trend : TB2c, 게이트 탈락(log_tierb.md TB2c, 3/4).
+#   tb_weather_trend_hw : TB2d, **검증 전.** 화담숲만 남긴 버전.
 DROPPED = (set(PROF_KEYS) | set(RESORT_KEYS) | set(NAME_KEYS) | set(RAMP_KEYS)
            | set(TB_RAMP_KEYS) | set(TB_WEATHER_KEYS) | set(TB_VISIT_KEYS)
            | set(TB_EMBED_KEYS) | set(TB_WEATHER_GATED_KEYS) | set(TB_NAVER_KEYS)
            | set(TB_NAVER_LEAD_KEYS) | set(TB_NAVER_LAG_KEYS)
-           | set(TB_NAVER_SLOPE_KEYS) | set(TB_NAVER_STD_KEYS))
+           | set(TB_NAVER_SLOPE_KEYS) | set(TB_NAVER_STD_KEYS)
+           | set(TB_WEATHER_TREND_KEYS) | set(TB_WEATHER_HWADAM_KEYS))
 
 
 def _norm_menu(m):
@@ -573,6 +593,52 @@ def _weather_gated(td, ctx):
     return gate[:, None] * w[None, :]
 
 
+_WEATHER_LAST7_CACHE = {}
+
+
+def _weather_last7(origin_date):
+    """TB_WEATHER_TREND_KEYS 원본(게이팅 전), TB2c. origin_date를 포함한 최근 7일
+    실측의 ta_avg 평균 · rn_day 합 · sd_max 최댓값. td가 아니라 **origin**(이미 지난
+    시점) 기준이라 실전 배포 가능 — TB2/TB2b의 "완벽예보 상한선" 전제가 없다."""
+    if origin_date in _WEATHER_LAST7_CACHE:
+        return _WEATHER_LAST7_CACHE[origin_date]
+    global _WEATHER
+    if _WEATHER is None:
+        _WEATHER = _load_tierb_csv("weather_icheon", ["ta_avg", "rn_day", "sd_max"])
+    days = [origin_date - pd.Timedelta(days=i) for i in range(7)]
+    vals = [_WEATHER[d] for d in days if d in _WEATHER]
+    if vals:
+        arr = np.stack(vals)
+        out = np.array([arr[:, 0].mean(), arr[:, 1].sum(), arr[:, 2].max()],
+                        dtype=np.float32)
+    else:
+        out = np.zeros(3, dtype=np.float32)
+    _WEATHER_LAST7_CACHE[origin_date] = out
+    return out
+
+
+def _weather_trend_gated(w7, td, ctx):
+    """TB_WEATHER_TREND_KEYS(3), TB2c. `_weather_last7(origin)` 결과를 TB2b와 동일한
+    업장군 게이트(화담숲=개장기간만·느티나무=연중)로 좁힌다. 개장기간 판정은 예측
+    대상일(td) 기준 — 그날 화담숲이 실제로 열려 있는지가 중요하지 origin이 아니다."""
+    md = (td.month, td.day)
+    hw_open = C.HWADAM_OPEN[0] <= md <= C.HWADAM_OPEN[1]
+    gate = ctx._hwadam_mask * (1.0 if hw_open else 0.0) + ctx._green_mask
+    return gate[:, None] * w7[None, :]
+
+
+def _weather_trend_hwadam(w7, td, ctx):
+    """TB_WEATHER_HWADAM_KEYS(3), TB2d. `_weather_trend_gated`와 원본 값·개장기간
+    판정(td 기준)은 동일하지만, **느티나무(green) 항을 완전히 뺀다.** TB2/TB2b/TB2c
+    셋 다 겨울엔 화담숲이 꺼지고 느티나무 단독 신호만 남으면서 FAR-겨울(학습 데이터
+    최소 폴드)에서 손해를 봤다 — 화담숲만 남기면 겨울엔 항상 0이 되어 그 잡음원이
+    구조적으로 사라진다는 게 이 후보의 핵심 가설."""
+    md = (td.month, td.day)
+    hw_open = C.HWADAM_OPEN[0] <= md <= C.HWADAM_OPEN[1]
+    gate = ctx._hwadam_mask * (1.0 if hw_open else 0.0)
+    return gate[:, None] * w7[None, :]
+
+
 def _visit(d):
     """TB_VISIT_KEYS(3). 관광공사 실측 방문자수(경기 광주시, 예측 대상일 td 기준)."""
     global _VISIT
@@ -720,6 +786,7 @@ def build_samples(mat, dates, origin_list, ctx, with_target=True, target_mat=Non
         win = mat[:, lo:o + 1]
         wdows = np.array([d.dayofweek for d in dates[lo:o + 1]])
         wstat = _window_stats(win)
+        w7 = _weather_last7(dates[o])   # TB2c — origin 기준 최근 7일 날씨(호라이즌 h와 무관)
         om = _open_mask(win, ctx.store_codes)
         st_mean = np.zeros(n, np.float32)
         st_nz = np.zeros(n, np.float32)
@@ -790,7 +857,8 @@ def build_samples(mat, dates, origin_list, ctx, with_target=True, target_mat=Non
                 np.tile(_naver_lag(dates[o]), (n, 1)),
                 np.tile(_naver_slope(td), (n, 1)),
                 np.tile(_naver_std(td), (n, 1)),
-                _weather_gated(td, ctx)],
+                _weather_gated(td, ctx), _weather_trend_gated(w7, td, ctx),
+                _weather_trend_hwadam(w7, td, ctx)],
                 axis=1))
             if with_target:
                 ys.append(tmat[:, o + h])
