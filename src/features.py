@@ -107,6 +107,15 @@ TB_WEATHER_TREND_KEYS = ["wthr_ta_avg_last7_g", "wthr_rn_day_last7sum_g", "wthr_
 #   (개장기간만, 계절성이 훨씬 뚜렷함)만 남긴다** — 겨울엔 항상 0이 되므로 FAR-겨울에서
 #   더 이상 잡음을 만들 수 없다는 게 핵심 가설.
 TB_WEATHER_HWADAM_KEYS = ["wthr_ta_avg_last7_hw", "wthr_rn_day_last7sum_hw", "wthr_sd_max_last7_hw"]
+# ⚠️ Tier B — TB2e. 진단(2026-08-14): FAR-겨울·F2 검증 구간에서 화담숲 게이트가 켜지는
+#   날은 6.59%(11/25~11/30, 개장기간 끝자락)뿐인데도 TB2d(화담숲 단독)가 FAR-겨울에서
+#   -0.00517 손해를 냈다 — 값의 93% 이상이 상수 0인 열치고는 손해가 너무 커서, "느티나무와
+#   섞여서" 문제가 아니라 열 추가 자체가 feature_fraction=0.65 표본추출을 흔든 부작용
+#   (규칙 ⑯)일 가능성이 크다는 뜻. 그래도 TB2d가 느티나무를 통째로 지우며 F2의 실신호까지
+#   버린 건 별개 문제라, **화담숲과 느티나무를 하나의 게이트 값으로 묶지 않고 완전히
+#   독립된 열로 분리**해서 그 손실만이라도 되살릴 수 있는지 시험한다. 화담숲 쪽은
+#   TB_WEATHER_HWADAM_KEYS를 그대로 재사용(값·게이트 동일), 느티나무는 아래 별도 열.
+TB_WEATHER_GREEN_KEYS = ["wthr_ta_avg_last7_gr", "wthr_rn_day_last7sum_gr", "wthr_sd_max_last7_gr"]
 # ⚠️ Tier B — 한국관광공사 지역별(경기 광주시) 방문자수. 마찬가지로 예측 대상일 실측치
 #   (data/tierb/visitors_gwangju.csv, fetch_visitors.py). local/outside/foreign 3종.
 TB_VISIT_KEYS = ["visit_local", "visit_outside", "visit_foreign"]
@@ -172,7 +181,8 @@ FEATURE_GROUPS = {"win": WIN_KEYS, "dow": DOW_KEYS, "closed": CLOSED_KEYS,
                   "tb_naver_slope": TB_NAVER_SLOPE_KEYS, "tb_naver_std": TB_NAVER_STD_KEYS,
                   "tb_ski_close": ["d_to_ski_close_actual"],
                   "tb_weather_trend": TB_WEATHER_TREND_KEYS,
-                  "tb_weather_trend_hw": TB_WEATHER_HWADAM_KEYS}
+                  "tb_weather_trend_hw": TB_WEATHER_HWADAM_KEYS,
+                  "tb_weather_split": TB_WEATHER_HWADAM_KEYS + TB_WEATHER_GREEN_KEYS}
 CATEGORICAL = ["store", "cluster", "category", "season_hint", "item_id",
                "dow", "month", "name_cluster"]
 # price는 5등급으로 묶되 **숫자(순서형)로 둔다**. categorical로 바꿨더니
@@ -188,7 +198,7 @@ def feature_names():
             + NAME_KEYS + TB_RAMP_KEYS + TB_WEATHER_KEYS + TB_VISIT_KEYS
             + TB_EMBED_KEYS + TB_NAVER_KEYS + TB_NAVER_LEAD_KEYS + TB_NAVER_LAG_KEYS
             + TB_NAVER_SLOPE_KEYS + TB_NAVER_STD_KEYS + TB_WEATHER_GATED_KEYS
-            + TB_WEATHER_TREND_KEYS + TB_WEATHER_HWADAM_KEYS)
+            + TB_WEATHER_TREND_KEYS + TB_WEATHER_HWADAM_KEYS + TB_WEATHER_GREEN_KEYS)
 
 
 # ⚠️ 학습에서 제외하는 그룹. build_samples 는 여전히 이 열들을 만들지만 **쓰지 않는다.**
@@ -202,13 +212,15 @@ def feature_names():
 #   tb_ramp/tb_weather/tb_visit : Tier B(대회 규정 밖). tb_ramp는 게이트 탈락(log_tierb.md TB1).
 #   tb_weather_v2 : TB2b, 게이트 탈락(log_tierb.md TB2b, 3/4).
 #   tb_weather_trend : TB2c, 게이트 탈락(log_tierb.md TB2c, 3/4).
-#   tb_weather_trend_hw : TB2d, **검증 전.** 화담숲만 남긴 버전.
+#   tb_weather_trend_hw : TB2d, 게이트 탈락(log_tierb.md TB2d, 2/4).
+#   tb_weather_split : TB2e, **검증 전.** 화담숲·느티나무를 독립 열로 분리한 버전.
 DROPPED = (set(PROF_KEYS) | set(RESORT_KEYS) | set(NAME_KEYS) | set(RAMP_KEYS)
            | set(TB_RAMP_KEYS) | set(TB_WEATHER_KEYS) | set(TB_VISIT_KEYS)
            | set(TB_EMBED_KEYS) | set(TB_WEATHER_GATED_KEYS) | set(TB_NAVER_KEYS)
            | set(TB_NAVER_LEAD_KEYS) | set(TB_NAVER_LAG_KEYS)
            | set(TB_NAVER_SLOPE_KEYS) | set(TB_NAVER_STD_KEYS)
-           | set(TB_WEATHER_TREND_KEYS) | set(TB_WEATHER_HWADAM_KEYS))
+           | set(TB_WEATHER_TREND_KEYS) | set(TB_WEATHER_HWADAM_KEYS)
+           | set(TB_WEATHER_GREEN_KEYS))
 
 
 def _norm_menu(m):
@@ -639,6 +651,14 @@ def _weather_trend_hwadam(w7, td, ctx):
     return gate[:, None] * w7[None, :]
 
 
+def _weather_trend_green(w7, ctx):
+    """TB_WEATHER_GREEN_KEYS(3), TB2e. 느티나무(green) 전용 열 — 연중 영업이라 계절
+    게이트 없이 항상 켜진다. `_weather_trend_hwadam`의 화담숲 열과 **완전히 분리된
+    별도 열**이라, 트리가 두 업장의 날씨 반응을 서로 다른 계수로 학습할 수 있다
+    (TB2d처럼 하나의 게이트 값으로 묶여 서로의 신호를 지우는 문제를 피한다)."""
+    return ctx._green_mask[:, None] * w7[None, :]
+
+
 def _visit(d):
     """TB_VISIT_KEYS(3). 관광공사 실측 방문자수(경기 광주시, 예측 대상일 td 기준)."""
     global _VISIT
@@ -858,7 +878,7 @@ def build_samples(mat, dates, origin_list, ctx, with_target=True, target_mat=Non
                 np.tile(_naver_slope(td), (n, 1)),
                 np.tile(_naver_std(td), (n, 1)),
                 _weather_gated(td, ctx), _weather_trend_gated(w7, td, ctx),
-                _weather_trend_hwadam(w7, td, ctx)],
+                _weather_trend_hwadam(w7, td, ctx), _weather_trend_green(w7, ctx)],
                 axis=1))
             if with_target:
                 ys.append(tmat[:, o + h])
