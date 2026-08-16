@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tier B — TB7 제출본 2종: x3(전면 적용) · x3s(봄 라우팅). run_tb3_submit.py와 동일 절차.
 
-📌 사전등록 (experiments/log_tierb.md TB7 제출 절, 2026-08-16)
+📌 사전등록 (experiments/log_tierb_TB7_차민.md 제출 절, 2026-08-16)
     x3  = x1(57열) + 품목 베타 2열(wxb_ta·wxb_rain) 전면 적용, 59열 전체학습.
           베타는 train 전체(겨울 1.5회 포함)로 추정 — FAR-겨울의 "여름 베타를 겨울에 적용"
           문제가 실전 구조에서는 완화된다는 가설의 직접 시험.

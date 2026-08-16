@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tier B — TB7 부속: FAR-겨울 플라시보 검정. run_tb7_visit_weather.py와 동일한 저울.
 
-📌 사전등록 (experiments/log_tierb.md TB7 부속 절, 2026-08-16)
+📌 사전등록 (experiments/log_tierb_TB7_차민.md 부속 절, 2026-08-16)
     질문: TB7의 FAR-겨울 손해(A -0.02110 / B -0.02483)가 날씨 "내용" 탓인가,
     "열이 늘어난 것 자체"(규칙 ⑯) 탓인가. 정보가 0인 대조군 3종이 같은 손해를 내는지 잰다.
       N3 : 날 단위 iid 정규난수 3열 (A와 같은 구조·열수, 정보 0)
