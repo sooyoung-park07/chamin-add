@@ -115,6 +115,35 @@ TB_NAVER_SLOPE_KEYS = ["naver_gonjiam_slope_lag7_29"]
 #   변동성 조합에서만 나타남 — 모델이 기존에 갖지 않은 종류의 정보일 가능성.
 #   (data/tierb/naver_std_lag.csv, process_naver_std.py)
 TB_NAVER_STD_KEYS = ["hwadam_std_lag20_35"]
+# ⚠️ Tier B — TB7: "곤지암 스키장" 검색량, origin(창이 끝나는 시점) 기준 최근 3일 평균.
+#   EDA(experiments/tb7_naver_keyword_brief.md, eda_naver_ski_placebo.py) 근거: ski
+#   업장군(포레스트릿·카페테리아) 잔차와 lag1~35 전체 스캔에서 **lag=1일 r=+0.5157을
+#   정점으로 매끄럽게 단조 감소**하는 곡선(고원형 아님) — 무작위 순열 플라시보 백분위
+#   100%. origin은 어떤 h에도 정확히 td-h(배포 가능한 최소 lag)이므로 창을 origin에
+#   최대한 가깝게 좁혀야 신호 희석이 적다 — 처음엔 TB2c 설계를 빌려 7일 평균으로 했다가
+#   (스캔 없이 고른 것이었음, 근거 부족) 사용자 지적으로 재설계, 3일로 축소.
+#   업장별 잔차 진단(build_residual_baseline_store.py)에서 ski 군집 12월이 전체 표에서
+#   가장 큰 단일 이탈(과소예측 ratio 2.80)이었던 구간을 정조준.
+#   TB2b의 교훈(리조트 전체에 뿌리면 나머지 업장에 잡음)을 따라 **ski 업장군에만** 값을
+#   주고 나머지 7개 업장은 0 — 게이팅은 build_samples에서 ctx.store_of_item으로 수행.
+#   (data/tierb/naver_trend2.csv, fetch_naver_trend2.py + process_naver_ski.py)
+TB_NAVER_SKI_KEYS = ["naver_ski_last3_g"]
+# ⚠️ Tier B — TB7b: TB7과 원본·집계는 동일하되, 업장 게이트 위에 **계절 게이트**를 추가.
+#   TB7 실측(log_tierb.md TB7절)에서 FAR-봄(2024년 봄 검증) 폴드만 유일하게 손해였다 —
+#   원본 검색값이 봄엔 이미 낮지만 완전히 0은 아니라서(2월 말 꼬리 구간 등), td가
+#   스키 시즌(`_calendar()`의 `ski` 플래그와 동일 정의: 12~2월 + 3/1~5)이 아니면 값을
+#   강제로 0으로 끊는다. 전례(TB2d, 화담숲 개장기간 게이팅)는 값이 이미 93%+ 0이어도
+#   먼 폴드 손해가 안 줄어든 적이 있어 확실한 해결책은 아니지만, 다른 설계라 시도할
+#   가치가 있다고 판단(사용자 제안, 2026-08-15).
+TB_NAVER_SKI_SEASON_KEYS = ["naver_ski_last3_season_g"]
+# ⚠️ Tier B — TB8: "화담숲 단풍" 검색량, td 기준 lag 7~18일 구간 평균.
+#   EDA(experiments/tb7_naver_keyword_brief.md, eda_naver2_placebo.py) 근거: hwadam
+#   업장군 잔차와의 상관이 td 기준 lag 1~35일 전 구간에서 한 번도 음수로 안 떨어지는
+#   넓은 고원(level 변형, r=+0.28~+0.46) — TB4d 방식 정식 플라시보(무작위 순열×5변형×
+#   lag1~35 스캔)에서 관측치가 백분위 100%로 우연 범위 밖. TB2b의 교훈을 따라
+#   hwadam 업장군(화담숲주막·화담숲카페)에만 값을 주고 나머지 7개 업장은 0.
+#   (data/tierb/naver_trend2.csv, fetch_naver_trend2.py + process_naver_hwadam_foliage.py)
+TB_NAVER_HWADAM_KEYS = ["naver_hwadam_foliage_lag7_18_g"]
 # ⚠️ Tier B — RAMP_KEYS는 스키장 폐장일을 고정 3/5 상수로 쓰지만 실측은 매년 다르다.
 #   뉴스 교차확인(2026-08-11):
 #     2024-03-01 (전국 스키장 폐장일 정리 기사, "곤지암 스키장 폐장일 2024년 3월 1일")
@@ -146,6 +175,9 @@ FEATURE_GROUPS = {"win": WIN_KEYS, "dow": DOW_KEYS, "closed": CLOSED_KEYS,
                   "tb_visit": TB_VISIT_KEYS, "tb_embed": TB_EMBED_KEYS,
                   "tb_naver": TB_NAVER_KEYS, "tb_naver_lead": TB_NAVER_LEAD_KEYS, "tb_naver_lag": TB_NAVER_LAG_KEYS,
                   "tb_naver_slope": TB_NAVER_SLOPE_KEYS, "tb_naver_std": TB_NAVER_STD_KEYS,
+                  "tb_naver_ski": TB_NAVER_SKI_KEYS,
+                  "tb_naver_ski_season": TB_NAVER_SKI_SEASON_KEYS,
+                  "tb_naver_hwadam": TB_NAVER_HWADAM_KEYS,
                   "tb_ski_close": ["d_to_ski_close_actual"]}
 CATEGORICAL = ["store", "cluster", "category", "season_hint", "item_id",
                "dow", "month", "name_cluster"]
@@ -160,7 +192,8 @@ def feature_names():
     return (WIN_KEYS + DOW_KEYS + CLOSED_KEYS + PROF_KEYS + CROSS_KEYS
             + RESORT_KEYS + CTX_KEYS + CAL_KEYS + RAMP_KEYS + ITEM_KEYS
             + NAME_KEYS + TB_RAMP_KEYS + TB_WEATHER_KEYS + TB_VISIT_KEYS
-            + TB_EMBED_KEYS + TB_NAVER_KEYS + TB_NAVER_LEAD_KEYS + TB_NAVER_LAG_KEYS + TB_NAVER_SLOPE_KEYS + TB_NAVER_STD_KEYS)
+            + TB_EMBED_KEYS + TB_NAVER_KEYS + TB_NAVER_LEAD_KEYS + TB_NAVER_LAG_KEYS + TB_NAVER_SLOPE_KEYS + TB_NAVER_STD_KEYS
+            + TB_NAVER_SKI_KEYS + TB_NAVER_HWADAM_KEYS + TB_NAVER_SKI_SEASON_KEYS)
 
 
 # ⚠️ 학습에서 제외하는 그룹. build_samples 는 여전히 이 열들을 만들지만 **쓰지 않는다.**
@@ -174,9 +207,10 @@ def feature_names():
 #   tb_ramp/tb_weather/tb_visit : Tier B(대회 규정 밖). tb_ramp는 게이트 탈락(log_tierb.md TB1).
 DROPPED = (set(PROF_KEYS) | set(RESORT_KEYS) | set(NAME_KEYS) | set(RAMP_KEYS)
            | set(TB_RAMP_KEYS) | set(TB_WEATHER_KEYS) | set(TB_VISIT_KEYS)
-           | set(TB_EMBED_KEYS) | set(TB_NAVER_KEYS)| 
-           set(TB_NAVER_LEAD_KEYS) | set(TB_NAVER_LAG_KEYS) 
-           | set(TB_NAVER_SLOPE_KEYS) | set(TB_NAVER_STD_KEYS))
+           | set(TB_EMBED_KEYS) | set(TB_NAVER_KEYS)|
+           set(TB_NAVER_LEAD_KEYS) | set(TB_NAVER_LAG_KEYS)
+           | set(TB_NAVER_SLOPE_KEYS) | set(TB_NAVER_STD_KEYS)
+           | set(TB_NAVER_SKI_KEYS) | set(TB_NAVER_HWADAM_KEYS) | set(TB_NAVER_SKI_SEASON_KEYS))
 
 
 def _norm_menu(m):
@@ -594,6 +628,29 @@ def _naver_std(td):
         _NAVER_STD = _load_tierb_csv("naver_std_lag", ["hwadam_std_lag20_35"])
     return _NAVER_STD.get(td, np.zeros(len(TB_NAVER_STD_KEYS), dtype=np.float32))
 
+_NAVER_SKI = None
+
+
+def _naver_ski(d):
+    """TB_NAVER_SKI_KEYS(1). "곤지암 스키장" 검색량, origin 기준 최근 3일 평균(TB7).
+    게이팅(ski 업장군만 값을 받음)은 build_samples에서 ctx.store_of_item으로 수행한다 —
+    여기는 게이팅 전 원본 스칼라만 반환."""
+    global _NAVER_SKI
+    if _NAVER_SKI is None:
+        _NAVER_SKI = _load_tierb_csv("naver_ski_last3", ["ski_last3"])
+    return _NAVER_SKI.get(d, np.zeros(len(TB_NAVER_SKI_KEYS), dtype=np.float32))
+
+_NAVER_HWADAM_FOLIAGE = None
+
+
+def _naver_hwadam_foliage(td):
+    """TB_NAVER_HWADAM_KEYS(1). "화담숲 단풍" 검색량, td 기준 lag 7~18일 구간 평균(TB8).
+    게이팅(hwadam 업장군만 값을 받음)은 build_samples에서 ctx.store_of_item으로 수행한다."""
+    global _NAVER_HWADAM_FOLIAGE
+    if _NAVER_HWADAM_FOLIAGE is None:
+        _NAVER_HWADAM_FOLIAGE = _load_tierb_csv("naver_hwadam_foliage_lag", ["hwadam_foliage_lag7_18"])
+    return _NAVER_HWADAM_FOLIAGE.get(td, np.zeros(len(TB_NAVER_HWADAM_KEYS), dtype=np.float32))
+
 def _embed_nn(items):
     """품목별 '의미상 가장 가까운 다른 품목' 인덱스(자기 자신 제외).
 
@@ -686,6 +743,13 @@ def build_samples(mat, dates, origin_list, ctx, with_target=True, target_mat=Non
     tmat = mat if target_mat is None else target_mat
     Xs, ys, ms = [], [], []
     idx_arange = np.arange(n, dtype=np.float32)
+    # TB7 게이트 — ski 업장군(포레스트릿·카페테리아)에만 1, 나머지 7개 업장은 0.
+    # 정적(품목 순서만으로 정해짐)이라 origin 루프 밖에서 한 번만 계산한다.
+    ski_gate = np.array([1.0 if C.STORE_CLUSTER[s] == "ski" else 0.0
+                          for s in ctx.store_of_item], dtype=np.float32)[:, None]
+    # TB8 게이트 — hwadam 업장군(화담숲주막·화담숲카페)에만 1, 나머지 7개 업장은 0.
+    hwadam_gate = np.array([1.0 if C.STORE_CLUSTER[s] == "hwadam" else 0.0
+                            for s in ctx.store_of_item], dtype=np.float32)[:, None]
     for o in origin_list:
         lo = o - C.WINDOW + 1
         win = mat[:, lo:o + 1]
@@ -718,6 +782,10 @@ def build_samples(mat, dates, origin_list, ctx, with_target=True, target_mat=Non
                       else np.zeros(n, np.float32))
         for h in range(1, C.HORIZON + 1):
             td = dates[o] + pd.Timedelta(days=h)
+            # TB7b 계절 게이트 — td가 스키 시즌(12~2월 + 3/1~5, _calendar()의 ski
+            # 플래그와 동일 정의)이 아니면 0. 업장 게이트(ski_gate)와 곱해 이중 적용.
+            season_gate = 1.0 if (td.month in C.SKI_SEASON_MONTHS
+                                   or (td.month == 3 and td.day <= 5)) else 0.0
             dstat = _dow_stats(win, wdows, td.dayofweek)
             cstat = _closed_stats(win, om, wdows, td.dayofweek)
             ctxm = np.column_stack([
@@ -760,7 +828,10 @@ def build_samples(mat, dates, origin_list, ctx, with_target=True, target_mat=Non
                 np.tile(_naver_lead(dates[o]), (n, 1)),
                 np.tile(_naver_lag(dates[o]), (n, 1)),
                 np.tile(_naver_slope(td), (n, 1)),
-                np.tile(_naver_std(td), (n, 1))],
+                np.tile(_naver_std(td), (n, 1)),
+                np.tile(_naver_ski(dates[o]), (n, 1)) * ski_gate,
+                np.tile(_naver_hwadam_foliage(td), (n, 1)) * hwadam_gate,
+                np.tile(_naver_ski(dates[o]), (n, 1)) * ski_gate * season_gate],
                 axis=1))
             if with_target:
                 ys.append(tmat[:, o + h])
@@ -775,9 +846,3 @@ def group_columns(group):
     fn = feature_names()
     keys = set(FEATURE_GROUPS[group])
     return [i for i, k in enumerate(fn) if k in keys]
-
-def feature_names():
-    return (WIN_KEYS + DOW_KEYS + CLOSED_KEYS + PROF_KEYS + CROSS_KEYS
-            + RESORT_KEYS + CTX_KEYS + CAL_KEYS + RAMP_KEYS + ITEM_KEYS
-            + NAME_KEYS + TB_RAMP_KEYS + TB_WEATHER_KEYS + TB_VISIT_KEYS
-            + TB_EMBED_KEYS + TB_NAVER_KEYS)
